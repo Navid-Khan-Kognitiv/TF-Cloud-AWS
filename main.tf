@@ -1,10 +1,13 @@
 terraform {
-  cloud {
+  backend "remote" {
+    hostname     = "app.terraform.io"
     organization = "Kognitiv-AWS"
+
     workspaces {
-      name = "project-dev-API-driven"
+      prefix = "simple-"
     }
   }
+  
   required_providers {
     aws = {
       source  = "hashicorp/aws"
