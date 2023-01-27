@@ -62,6 +62,7 @@ stages:
       displayName: plan prod
       inputs:
         script: terraform plan -input=false
+
 - stage: deploy_dev
   dependsOn:
   - ci
@@ -90,6 +91,7 @@ stages:
             displayName: apply
             inputs:
               script: terraform apply -auto-approve
+
 - stage: deploy_qa
   dependsOn:
   - deploy_dev
@@ -118,6 +120,7 @@ stages:
             displayName: apply
             inputs:
               script: terraform apply -auto-approve
+
 - stage: deploy_ist
   dependsOn:
   - deploy_qa
@@ -146,6 +149,7 @@ stages:
             displayName: apply
             inputs:
               script: terraform apply -auto-approve
+
 - stage: deploy_uat
   dependsOn:
   - ci
@@ -174,9 +178,10 @@ stages:
             displayName: apply
             inputs:
               script: terraform apply -auto-approve
+
 - stage: deploy_prod
   dependsOn:
-  - ci
+  - deploy_uat
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
   - deployment: prod
@@ -202,3 +207,32 @@ stages:
             displayName: apply
             inputs:
               script: terraform apply -auto-approve  
+
+- stage: deploy_dr
+  dependsOn:
+  - deploy_prod
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - deployment: dr
+    variables:
+    - name: TF_WORKSPACE
+      value: dr
+    environment:
+      name: dr
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - task: CmdLine@2
+            displayName: terraform login
+            inputs:
+              script: echo 'credentials "app.terraform.io" { token = "$(API_KEY)" }' >$(System.DefaultWorkingDirectory)/.terraformrc
+          - task: CmdLine@2
+            displayName: init
+            inputs:
+              script: terraform init -input=false
+          - task: CmdLine@2
+            displayName: apply
+            inputs:
+              script: terraform apply -auto-approve 
