@@ -1,0 +1,5 @@
+List of Things to add to this TF Script:
+
+1. VPC
+2. Subnet 
+3. Always tag resources
