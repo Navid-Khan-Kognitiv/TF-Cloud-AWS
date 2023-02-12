@@ -31,7 +31,7 @@ stages:
     - task: CmdLine@2
       displayName: terraform login
       inputs:
-        script: echo 'credentials "app.terraform.io" { token = "$(TF-API-KEY)" }' >$(System.DefaultWorkingDirectory)/.terraformrc
+        script: echo 'credentials "app.terraform.io" { token = "$(TF-API-BLAH)" }' >$(System.DefaultWorkingDirectory)/.terraformrc
     - task: CmdLine@2
       env:
         TF_WORKSPACE: dev
