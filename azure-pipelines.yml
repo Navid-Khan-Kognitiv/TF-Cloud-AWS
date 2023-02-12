@@ -14,6 +14,12 @@ stages:
   jobs:
   - job: validate
     steps:
+    - task: AzureKeyVault@2
+      inputs:
+        azureSubscription: 'kls-prd (174e20af-0f2b-46b0-b2e8-9f5036577a88)'
+        KeyVaultName: 'ado-keyring'
+        SecretsFilter: '*'
+        RunAsPreJob: true
     - task: CmdLine@2
       displayName: Terraform Validate
       inputs:
@@ -25,7 +31,7 @@ stages:
     - task: CmdLine@2
       displayName: terraform login
       inputs:
-        script: echo 'credentials "app.terraform.io" { token = "$(API_KEY)" }' >$(System.DefaultWorkingDirectory)/.terraformrc
+        script: echo 'credentials "app.terraform.io" { token = "$(TF-API-KEY)" }' >$(System.DefaultWorkingDirectory)/.terraformrc
     - task: CmdLine@2
       env:
         TF_WORKSPACE: dev
