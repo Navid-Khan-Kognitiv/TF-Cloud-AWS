@@ -4,11 +4,13 @@ trigger:
     - '*'
 pool:
   vmImage: 'ubuntu-22.04'
+
 variables:
 - name: TF_CLI_CONFIG_FILE
   value: $(System.DefaultWorkingDirectory)/.terraformrc
 - name: TF_IN_AUTOMATION
   value: true
+
 stages:
 - stage: ci
   jobs:
@@ -26,6 +28,7 @@ stages:
         script: |
           terraform init -backend=false
           terraform validate
+  
   - job: plan
     steps:
     - task: CmdLine@2
